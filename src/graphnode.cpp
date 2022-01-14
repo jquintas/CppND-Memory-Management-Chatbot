@@ -8,13 +8,9 @@ GraphNode::GraphNode(int id)
 
 GraphNode::~GraphNode()
 {
-    //// STUDENT CODE
-    ////
+    // @.@ DONE: Task 0. Not a good idea to destroy chatbot here. Improper deallocation of chatbot.
+    //delete _chatBot; 
 
-    delete _chatBot; 
-
-    ////
-    //// EOF STUDENT CODE
 }
 
 void GraphNode::AddToken(std::string token)
@@ -27,34 +23,27 @@ void GraphNode::AddEdgeToParentNode(GraphEdge *edge)
     _parentEdges.push_back(edge);
 }
 
-void GraphNode::AddEdgeToChildNode(GraphEdge *edge)
+// @.@ DONE: Task4 - smart unique pointer rvalue reference, move semantics
+void GraphNode::AddEdgeToChildNode(std::unique_ptr<GraphEdge> &&edge)
 {
-    _childEdges.push_back(edge);
-}
+    _childEdges.push_back(std::move(edge));
+}   
 
-//// STUDENT CODE
-////
-void GraphNode::MoveChatbotHere(ChatBot *chatbot)
+// @.@ DONE: TASK 5 - Make all required changes in graphnode.h / graphnode.cpp
+void GraphNode::MoveChatbotHere(ChatBot chatbot)
 {
-    _chatBot = chatbot;
-    _chatBot->SetCurrentNode(this);
+    _chatBot = std::move(chatbot);
+    _chatBot.SetCurrentNode(this);
 }
 
 void GraphNode::MoveChatbotToNewNode(GraphNode *newNode)
 {
-    newNode->MoveChatbotHere(_chatBot);
-    _chatBot = nullptr; // invalidate pointer at source
+    newNode->MoveChatbotHere(std::move(_chatBot));
 }
-////
-//// EOF STUDENT CODE
 
 GraphEdge *GraphNode::GetChildEdgeAtIndex(int index)
 {
-    //// STUDENT CODE
-    ////
+    // @.@ DONE: Task 4 - raw pointer to the object
+    return _childEdges[index].get();
 
-    return _childEdges[index];
-
-    ////
-    //// EOF STUDENT CODE
 }

@@ -1,6 +1,7 @@
 #ifndef CHATGUI_H_
 #define CHATGUI_H_
 
+#include <memory>
 #include <wx/wx.h>
 
 class ChatLogic; // forward declaration
@@ -13,13 +14,9 @@ private:
     wxBoxSizer *_dialogSizer;
     wxBitmap _image;
 
-    //// STUDENT CODE
-    ////
+    // @.@ DONE: Task 1 - replace by unique pointer, now _chatlogic is an exclusive resource of class ChatBotPanelDialog
+    std::unique_ptr<ChatLogic> _chatLogic;
 
-    ChatLogic *_chatLogic;
-
-    ////
-    //// EOF STUDENT CODE
 
 public:
     // constructor / destructor
@@ -27,7 +24,8 @@ public:
     ~ChatBotPanelDialog();
 
     // getter / setter
-    ChatLogic *GetChatLogicHandle() { return _chatLogic; }
+    // @.@ DONE: Task 1 - use the .get() function to retrieve a raw pointer to the object, from using smart pointer
+    ChatLogic *GetChatLogicHandle() { return _chatLogic.get(); }
 
     // events
     void paintEvent(wxPaintEvent &evt);

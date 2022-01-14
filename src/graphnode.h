@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include "chatbot.h"
 
 
@@ -12,18 +13,16 @@ class GraphEdge;
 class GraphNode
 {
 private:
-    //// STUDENT CODE
-    ////
 
-    // data handles (owned)
-    std::vector<GraphEdge *> _childEdges;  // edges to subsequent nodes
+
+    // @.@ DONE: Task 4 - change the ownership of all instances of GraphEdge in a way such that each instance of GraphNode 
+    //           exclusively owns the outgoing GraphEdges and holds non-owning references to incoming GraphEdges
+    //           unique pointers (owned)
+    std::vector<std::unique_ptr<GraphEdge>> _childEdges;  // edges to subsequent nodes
 
     // data handles (not owned)
     std::vector<GraphEdge *> _parentEdges; // edges to preceding nodes 
-    ChatBot *_chatBot;
-
-    ////
-    //// EOF STUDENT CODE
+    ChatBot _chatBot;
 
     // proprietary members
     int _id;
@@ -44,15 +43,13 @@ public:
     // proprietary functions
     void AddToken(std::string token); // add answers to list
     void AddEdgeToParentNode(GraphEdge *edge);
-    void AddEdgeToChildNode(GraphEdge *edge);
+    // DONE Task4 - move semantics, When transferring ownership from class ChatLogic, where all instances of 
+    // GraphEdge are created, into instances of GraphNode, make sure to use move semantics.
+    void AddEdgeToChildNode(std::unique_ptr<GraphEdge> &&edge);
 
-    //// STUDENT CODE
-    ////
+    // @.@ DONE: TASK 5 - Make all required changes in graphnode.h / graphnode.cpp, move semantics
+    void MoveChatbotHere(ChatBot chatbot);
 
-    void MoveChatbotHere(ChatBot *chatbot);
-
-    ////
-    //// EOF STUDENT CODE
 
     void MoveChatbotToNewNode(GraphNode *newNode);
 };

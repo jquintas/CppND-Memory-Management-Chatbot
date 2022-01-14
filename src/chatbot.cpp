@@ -30,23 +30,97 @@ ChatBot::ChatBot(std::string filename)
     _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
 }
 
-ChatBot::~ChatBot()
+/*
+@.@ Task 2 - The Rule of Five
+The destructor: Responsible for freeing the resource once the object it belongs to goes out of scope.
+The copy constructor: As with the assignment operator, the default copy constructor performs a shallow copy of the data members. 
+                      If something else is needed, the programmer has to implement it accordingly.
+The assignment operator: The default assignment operation performs a member-wise shallow copy, which does not copy the content 
+                         behind the resource handle. If a deep copy is needed, it has be implemented by the programmer.
+The move constructor: Because copying objects can be an expensive operation which involves creating, copying and destroying 
+                      temporary objects, rvalue references are used to bind to an rvalue. Using this mechanism, the move 
+                      constructor transfers the ownership of a resource from a (temporary) rvalue object to a permanent lvalue 
+                      object.
+The move assignment operator: With this operator, ownership of a resource can be transferred from one object to another. 
+                              The internal behavior is very similar to the move constructor.
+*/
+
+// @.@ DONE: 1 - destructor
+ChatBot::~ChatBot()   
 {
     std::cout << "ChatBot Destructor" << std::endl;
 
     // deallocate heap memory
     if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
+        std::cout << "DELETING instance of ChatBot at " << this << '\n';
         delete _image;
         _image = NULL;
     }
 }
 
-//// STUDENT CODE
-////
+// @.@ DONE: 2 - copy constructor
+ChatBot::ChatBot(const ChatBot &source) 
+{
+    _image = new wxBitmap(source._image->ConvertToImage());
+    _chatLogic = source._chatLogic;
+    _chatLogic->SetChatbotHandle(this);
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
+    std::cout << "COPYING content of instance " << &source << " to instance " << this << '\n';
+}
 
-////
-//// EOF STUDENT CODE
+// @.@ DONE: 3 - copy assignment operator
+ChatBot& ChatBot::operator=(const ChatBot &source) 
+{
+    std::cout << "ASSIGNING content of instance " << &source << " to instance " << this << '\n';
+    if (this == &source)
+        return *this;
+    _image = new wxBitmap(source._image->ConvertToImage());
+    _chatLogic = source._chatLogic;
+    _chatLogic->SetChatbotHandle(this);
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;    
+    return *this;
+}
+
+// @.@ DONE: 4 - move constructor
+ChatBot::ChatBot(ChatBot &&source)  
+{
+    std::cout << "MOVING (c'tor) instance " << &source << " to instance " << this << '\n';
+    _image = source._image;
+    _chatLogic = source._chatLogic;
+    _chatLogic->SetChatbotHandle(this);
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;  
+    
+    source._image = NULL;
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
+    source._currentNode = nullptr;
+}
+
+// @.@ DONE: 5 - move assignment operator
+ChatBot& ChatBot::operator=(ChatBot &&source) // 5 : move assignment operator
+{
+    std::cout << "MOVING (assign) instance " << &source << " to instance " << this << '\n';
+    if (this == &source)
+        return *this;
+        
+    _image = source._image;
+    _chatLogic = source._chatLogic;
+    _chatLogic->SetChatbotHandle(this);
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode; 
+
+    source._image = NULL;    
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
+    source._currentNode = nullptr;
+        
+    return *this;
+}
+    
 
 void ChatBot::ReceiveMessageFromUser(std::string message)
 {
